@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "#' ---\n#' title:  \"Ratemaking Capstone v1\"\n#' author: \"ALR\"\n#' date:   \"August 21, 2017\"\n#' output: html_document\n#' ---\n\n#+ include=FALSE\nknitr::opts_chunk$set(echo = FALSE)\n\n#+ echo = FALSE\n# Description:\n#   Test of whether the capstone works!\n#   This is an R file with comments using RMarkdown syntax\n#\n\n\n#' This will show up as RMarkdown.  2 + 2 = __`r 2 + 2`__.\n#' \n#' \n\n\n",
+    "created" : 1503314148950.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1159967209",
+    "id" : "465B2B6",
+    "lastKnownWriteTime" : 1503314985,
+    "last_content_update" : -2147483648,
+    "path" : "C:/home/git/Other/CASRBootcamp17/capstones/ratemaking/demo/trial-v1.R",
+    "project_path" : "demo/trial-v1.R",
+    "properties" : {
+        "notebook_format" : "html_document",
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

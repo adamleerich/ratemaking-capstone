@@ -1,0 +1,65 @@
+Datasets to Create
+==============================
+
+Premium by policy
+  Grain: PolicyNumber
+  Other fields: 
+    inception date (make sure that there are some non-annual policies)
+    expiration date
+    premium
+    brokerage
+    state
+
+    
+Rating Questions and Answers
+  Grain: PolicyNumber, Question
+  Other Fields:
+    answer
+  Question Examples:
+    TODO
+    
+    
+Loss Data
+  Grain: PolicyNumber, ClaimNumber
+  Other fields:
+    Paid
+    Incurred
+    Claim Occ date
+    Claim Made date
+            
+
+Rate Adequacy by Policy Year
+  Grain: PolicyYear
+  
+  
+Expected Steps
+================================
+
+Pivot rating questions and answers 
+Merge with premium data
+On-level premium, annualize
+Trend and develop losses
+Append frequency and total severity to premium data set
+Explode premium data set by AY/RY
+Do a decision tree/glm on premium data to get frequency model
+Get severity model from loss data after trend/developing
+Test model
+Create tool for model
+Run old risks through new model to get rate impact 
+
+
+How will bootcamp lecture material be used?
+================================================
+Data files will be in different formats CSV, XLS, ?
+Use viz for EDA
+Use decision tree to get basic partition of book
+Use glm for frequency analysis
+Use actuar/fitdistrplus/MASS/mle for severity fitdistrplus/MASS/mle
+Use dplyr for data manipulation
+Use ChainLadder for development factors
+Use RMarkdown for documentation
+
+
+Other Ideas
+======================
+Talk about gbm?
