@@ -1,29 +1,31 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 Ratemaking Capstone Instructions
 ========================================
 
 You will get these data files
 
-  * clms_train.RData
-  * pol1_test.RData
-  * pol1_train.RData
-  * pol3_test.RData
-  * pol3_train.RData
-  * tri_train.RData
- 
+  * clms.RData
+  * pol_dates.RData
+  * pol_rating.RData
+  * states.csv
+  
 This data is all made up.
 It is for a fictitious claims-made Architects and Engineers program.  
 You have data for policy years 2007 through 2016.
 The program is countrywide.
-You have some policy data, split into two sets, and claims data for the training set of policy data.
+You have some policy data, split into two sets, and claims data.
  
-The `pol1` files have policy number, inception date, and expiration date.  
-The `pol3` files have some more policy attributes like revenue, employee count, etc.
+The `pol_dates` files have policy number, inception date, and expiration date.  
+The `pol_rating` files have some more policy attributes like revenue, employee count, etc.
 The `clms` file has claim info, on a ground-up basis, for the training set.
-The claims valuation date is Dec 31, 2016.
-The program has experienced claims inflation over the 10-year period.
-Also, please note that some of the claims are still open and may not be fully developed.
+The `states` file gives you state groupings.  In real life you wouldn't have this.  But this is not real life.  :)
 
-There is a `tri` data set that shows the triangular development, by policy year and calendar year end for the training set.
+
+The claims valuation date is Dec 31, 2016.
 
 We do not have limits on the policies or how much was actually charged.
 
@@ -35,8 +37,7 @@ Then, you will calculate pure premium values for each of the "test" policies wit
   * $2m
   * $5m
 
-I have the real answers for the "test" set so we can compare your results to those and maybe even simulate the potential for adverse selection in your model!
-  
+
 You will use the following skills in the capstone project
 
   * general R skills, like indexing and arithmetic calculations
@@ -48,10 +49,8 @@ You will use the following skills in the capstone project
   * glms for frequency model(s)
   * RMarkdown for report writing
   * curve fitting for severity distribution(s)
-  * ChainLadder for loss development
  
 This capstone will also require you to do real actuarial work.
-Some of the stuff you will do, like figuring out inflation trend, may require you to write your own functions in R.
 Doing one-way analyses and figuring out whether data should be grouped will take some time.
 Deciding which model to use in ratemaking can be as much art as science...no one answer will be "correct".
 
