@@ -1,7 +1,7 @@
 #' ---
 #' title:  "Ratemaking Capstone v1"
 #' author: "ALR"
-#' date:   "August 21, 2017"
+#' date:   "July 24, 2018"
 #' output: html_document
 #' ---
 
@@ -13,6 +13,8 @@ require(alrtools)
 require(magrittr)
 require(dplyr)
 require(ChainLadder)
+require(tree)
+
 
 
 #+ include=FALSE
@@ -29,48 +31,30 @@ dir('./share', pattern = 'RData')
 
 
 
-#' The data files available are
-#'   
-#'   File              | Notes
-#'   ----------------- |------------------------
-#'   pol1_train.RData  | Policy number, dates
-#'   po13_train.RData  | Other info
-#'   clms_train.RData  | Individual claims
-#'   tri_train.RData   | Triangle of claims
-#'   pol1_test.RData   | Same for test
-#'   pol3_test.RData   | Same for test
-#'   
-#'   
-
-
-
 #+ include=FALSE
 # Load all the data
-load("./share/clms_train.RData")
-load("./share/pol1_test.RData")
-load("./share/pol1_train.RData")
-load("./share/pol3_test.RData")
-load("./share/pol3_train.RData")
-load("./share/tri_train.RData")
+load('./share/claims.RData')
+load('./share/pol_dates.RData')
+load('./share/pol_rating.RData')
 
 
 
 #+ include=FALSE
 # Are there closed claims with 0 payment?
-clms_train %>% 
-  filter(status == 'C', claim_at_val < 1)
+claims %>% 
+  filter(status == 'C', claim_ultimate < 1)
 
 
 
-summary(clms_train)
+summary(claims)
 
 
 # Get average severity
-avg_severity <- clms_train %>% 
+avg_severity <- claims %>% 
   mutate(year = floor(claim_made / 100)) %>% 
   filter(status == 'C') %>% 
   group_by(year) %>% 
-  summarize(count = n(), severity = sum(claim_at_val)) %>% 
+  summarize(count = n(), severity = sum(claim_ultimate)) %>% 
   mutate(avg_severity = severity / count)
 
 lm_as <- lm(log(avg_severity) ~ year, data = avg_severity)
@@ -80,26 +64,11 @@ industry_trend <- 0.03
 
 
 
-# Does the Mack method work
-tri_train
-tri <- tri_train[, 2:11] %>% as.matrix %>% unname %>% as.triangle
-
-mm <- MackChainLadder(tri)
-cm <- ClarkLDF(tri)
-
-cumprod(mm$f[10:1])
-ldfs_mm <- 1 / summary(mm)$ByOrigin$Dev.To.Date
+claims %>% head
+claims$cm_year <- floor(claims$claim_made / 100)
+claims %>% head
 
 
-
-
-clms_train %>% head
-clms_train$cm_year <- floor(clms_train$claim_made / 100)
-clms_train %>% head
-ldfs_mm
-
-
-clms_train$ldf <- ldfs_mm[clms_train$cm_year - 2006]
 
 
 
@@ -120,78 +89,70 @@ clms_train$ldf <- ldfs_mm[clms_train$cm_year - 2006]
 
 
 #' ## Headers for each object
-names(pol1_train)
-names(pol1_test)
-names(pol3_train)
-names(pol3_test)
-names(clms_train)
-names(tri_train)
+names(pol_dates)
+names(pol_rating)
+names(pol_rating)
+names(claims)
 
 
 
 #' Are the training and testing sets mutually exclusive?
-pols_train <- unique(pol1_train$policy_number)
-pols_train %>% length
-pol1_train %>% nrow
-pols_test <- unique(pol1_test$policy_number)
-pols_test %>% length
-pol1_test %>% nrow
+pols <- unique(pol_dates$policy_number)
+pols %>% length
+pol_dates %>% nrow
+pols <- unique(pol_dates$policy_number)
+pols %>% length
+pol_dates %>% nrow
 
 
-sum(pols_train %in% pols_test)
-sum(pols_test %in% pols_train)
+sum(pols %in% pols)
+sum(pols %in% pols)
 
 
-pols_train <- unique(pol3_train$policy_number)
-pols_train %>% length
+pols <- unique(pol_rating$policy_number)
+pols %>% length
 
 
-pols_test <- unique(pol3_test$policy_number)
-pols_test %>% length
+pols <- unique(pol_rating$policy_number)
+pols %>% length
 
 
-sum(pols_train %in% pols_test)
-sum(pols_test %in% pols_train)
+sum(pols %in% pols)
+sum(pols %in% pols)
 
 
 
 #' Are status and status.1 the same?  If so, remove status.1
-sum(!clms_train$status == clms_train$status.1)
-clms_train$status.1 <- NULL
-
-
-
-#' Is the current incurred equal to the most recent diagonal?
-sum(clms_train$claim_at_val)
-sum(diag(as.matrix(tri_train[, 11:2])))
+sum(!claims$status == claims$status.1)
+claims$status.1 <- NULL
 
 
 
 #' pols3 objects have multiple rows per policy.
 #' What is the key on this table?
 #' Check that it is policy_number and variable
-nrow(pol3_train[, c('policy_number', 'variable')])
-nrow(unique(pol3_train[, c('policy_number', 'variable')]))
+nrow(pol_rating[, c('policy_number', 'variable')])
+nrow(unique(pol_rating[, c('policy_number', 'variable')]))
 #' Since these have the same number of rows 
 #' then policy_number, variable is a key.
 
 
 
-#' We need to un-melt the pol3 object and join it with the pol1 object.
-polw <- tidyr::spread(pol3_train, variable, value)
-pol_train <- merge(pol1_train, polw)
+#' We need to un-melt the pol_rating object and join it with the pol_dates object.
+polw <- tidyr::spread(pol_rating, variable, value)
+pol <- merge(pol_dates, polw)
 #' Did the merge work?
-nrow(pol_train)
-sum(pol_train$policy_number %in% pols_train)
+nrow(pol)
+sum(pol$policy_number %in% pols)
 
 
 
 #' Some of the data need to be converted.
-pol_train$inception <- as.numeric(pol_train$inception)
-pol_train$expiration <- as.numeric(pol_train$expiration)
-pol_train$revenue <- as.numeric(pol_train$revenue)
-pol_train$five_year_claims <- as.numeric(pol_train$five_year_claims)
-pol_train$employee_count <- as.numeric(pol_train$employee_count)
+pol$inception <- as.numeric(pol$inception)
+pol$expiration <- as.numeric(pol$expiration)
+pol$revenue <- as.numeric(pol$revenue)
+pol$five_year_claims <- as.numeric(pol$five_year_claims)
+pol$employee_count <- as.numeric(pol$employee_count)
 
 
 
@@ -200,23 +161,23 @@ pol_train$employee_count <- as.numeric(pol_train$employee_count)
 #' We now need to calculate trend in our loss data, if it has any.
 #' It might be best to create a one-way table generator first.
 #' Let's first add current incurred to the policy table.
-inc <- clms_train %>% group_by(policy_number) %>% 
+inc <- claims %>% group_by(policy_number) %>% 
   summarize(
-    total_incurred = sum(claim_at_val),
+    total_incurred = sum(claim_ultimate),
     claim_counts = n()
   )
 
-pol_inc <- merge(pol_train, inc, all.x = TRUE)
+pol_inc <- merge(pol, inc, all.x = TRUE)
 
 pol_inc$total_incurred[is.na(pol_inc$total_incurred)] <- 0
 pol_inc$claim_counts[is.na(pol_inc$claim_counts)] <- 0
 
 
 sum(pol_inc$total_incurred)
-sum(clms_train$claim_at_val)
+sum(claims$claim_ultimate)
 
 sum(pol_inc$claim_counts)
-nrow(clms_train)
+nrow(claims)
 
 
 pol_inc$py <- left(pol_inc$inception, 4) %>% as.numeric
@@ -235,10 +196,59 @@ pol_inc %>% group_by(py) %>%
 
 
 # Get policy data in claims table
-clms <- merge(clms_train, pol_train)
-clms$policy_year <- floor(clms$inception / 100)
+claims <- merge(claims, pol)
+claims$policy_year <- floor(as.numeric(claims$inception) / 100)
 
-clms_py <- clms %>% group_by(policy_year, status) %>% 
-  summarize(count = n(), inc = sum(claim_at_val))
+claims_py <- claims %>% group_by(policy_year, status) %>% 
+  summarize(count = n(), inc = sum(claim_ultimate))
+
+
+
+
+
+
+log(claims$claim_ultimate) %>% hist
+
+
+
+sum(pol_inc$claim_counts)
+nrow(claims)
+
+
+mean(pol_inc$claim_counts)
+sd(pol_inc$claim_counts)
+
+
+
+# Get state group
+state <- read.csv('./data/states.csv', stringsAsFactors = TRUE)
+state_levels <- state$State
+pstates <- factor(pol_inc$state, levels = state_levels)
+pol_inc$StateGroup <- state$Frequency.Group[pstates]
+
+
+
+
+
+
+
+model1 <- glm(claim_counts ~ revenue + StateGroup + discipline, data = pol_inc)
+summary(model1)
+
+
+
+
+
+tpol <- tree(
+  formula = claim_counts ~ revenue + discipline,
+  data = pol_inc
+)
+
+
+plot(tpol, type = 'uniform')
+text(tpol, pretty = 5, col = 'blue', cex = 0.8)
+
+
+
 
 

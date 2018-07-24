@@ -116,7 +116,7 @@ a <- factor(policies$state_group, levels = c('Low', 'Mid', 'High'))
 policies$state_relativity <- c(1.0, 1.25, 1.5)[as.integer(a)]
 
 # If revenue is over $4m state does not matter
-policies$state_relativity[policies$revenue >= 4e6] <- 2.0
+policies$state_relativity[policies$revenue >= 4e6] <- 3.5
 
 
 
@@ -327,7 +327,7 @@ pol_dates <- policies[, c("policy_number",
                      "inception", 
                      "expiration")]
 
-pol_values_wide <- policies[, c("policy_number",
+pol_rating_wide <- policies[, c("policy_number",
                      "revenue", 
                      "state", 
                      "discipline", 
@@ -340,8 +340,8 @@ pol_values_wide <- policies[, c("policy_number",
 
 
 # Policy attributes, melted
-pol_values <- melt(pol_values_wide, id.vars = 'policy_number')
-pol_values[!duplicated(pol_values$variable), ]
+pol_rating <- melt(pol_rating_wide, id.vars = 'policy_number')
+pol_rating[!duplicated(pol_rating$variable), ]
 
 
 
@@ -360,7 +360,7 @@ clms$claim_closed[clms$status == 'O'] <- NA
 
 save(claims,      file = './share/claims.RData')
 save(pol_dates,    file = './share/pol_dates.RData')
-save(pol_values,    file = './share/pol_rating.RData')
+save(pol_rating,    file = './share/pol_rating.RData')
 
 
 

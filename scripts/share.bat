@@ -6,5 +6,9 @@ Rscript ".\R\create-data.R"
 
 
 copy /Y .\data\states.csv .\share\
+copy /Y .\R\resources.R .\share\
+
+
+7z a ratemaking-capstone.zip .\share\*
 
 
