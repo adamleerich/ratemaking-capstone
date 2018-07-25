@@ -12,3 +12,6 @@ copy /Y .\R\resources.R .\share\
 7z a ratemaking-capstone.zip .\share\*
 
 
+copy /Y .\share\* ..\capstone-project\
+
+

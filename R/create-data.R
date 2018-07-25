@@ -345,9 +345,18 @@ pol_rating <- melt(pol_rating_wide, id.vars = 'policy_number')
 
 # Claims
 claims <- claims[ , 
-  c("index", 
-    "policy_number", 
+  c("policy_number", 
     "claim_ultimate")]
+
+
+# [July 25, 2018 ALR]
+# Give claims a unique claim number
+
+claims$claim_number <- paste0(
+  'CR', right(paste0('0000000000', sample(1:1e8, nrow(claims))), 10))
+
+
+
 
 
 save(claims,      file = './share/claims.RData')
