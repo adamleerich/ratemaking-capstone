@@ -71,9 +71,7 @@ policies$inception <- paste0(
 )
 
 a <- (policies$policy_month + policies$duration_months)
-table(a)
 b <- floor((a - 1) / 12)
-table(b)
 
 policies$expiration <- paste0(
   policies$policy_year + b, 
@@ -162,19 +160,19 @@ policies$claim_count <- rnegbin(
 
 
 
-#############################################
-# GLM TEST for FREQ
-# TODO Need to flesh this out
-#############################################
-
-glm_freq <- glm(
-  data = policies,
-  formula = claim_count ~ 
-    state_group + discipline_group + revenue + duration_months,
-  family = quasipoisson
-)
-
-summary(glm_freq)
+# #############################################
+# # GLM TEST for FREQ
+# # TODO Need to flesh this out
+# #############################################
+# 
+# glm_freq <- glm(
+#   data = policies,
+#   formula = claim_count ~ 
+#     state_group + discipline_group + revenue + duration_months,
+#   family = quasipoisson
+# )
+# 
+# summary(glm_freq)
 
 
 
@@ -341,21 +339,15 @@ pol_rating_wide <- policies[, c("policy_number",
 
 # Policy attributes, melted
 pol_rating <- melt(pol_rating_wide, id.vars = 'policy_number')
-pol_rating[!duplicated(pol_rating$variable), ]
+# pol_rating[!duplicated(pol_rating$variable), ]
 
 
 
 # Claims
-clms <- claims[ , 
+claims <- claims[ , 
   c("index", 
-    "status",
     "policy_number", 
-    "claim_made", 
-    "claim_closed", 
-    "status", 
     "claim_ultimate")]
-
-clms$claim_closed[clms$status == 'O'] <- NA
 
 
 save(claims,      file = './share/claims.RData')
