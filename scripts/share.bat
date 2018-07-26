@@ -13,5 +13,5 @@ copy /Y .\R\resources.R .\share\
 
 
 copy /Y .\share\* ..\capstone-project\
-
+copy /Y .\share\* ..\raw_bootcamp\capstones\ratemaking\
 
