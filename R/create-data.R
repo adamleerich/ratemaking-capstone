@@ -184,37 +184,37 @@ policies$claim_count <- rnegbin(
 
 # Number of claims total
 m <- sum(policies$claim_count)
-claims <- data.frame(claimindex = 1:m)
+losses <- data.frame(claimindex = 1:m)
 
 # Merge with policies table
 lpolicies <- policies[policies$claim_count > 0, ]
 a <- cumsum(lpolicies$claim_count)
 b <- c(1, a[-length(a)] + 1)
 lpolicies$claimindex_start <- b
-claims <- cbind(claims, lookup(claims, lpolicies))
+losses <- cbind(losses, lookup(losses, lpolicies))
 
 
 
 # Claim made date
 #   Select a month at random from the duration
-a <- floor(runif(m) * (claims$duration_months + 3))
-claims$claim_made <- add_yyyymm(claims$inception, a)
+a <- floor(runif(m) * (losses$duration_months + 3))
+losses$claim_made <- add_yyyymm(losses$inception, a)
 
 # Claim closed date
 #   Expect duration to be 2 years from report
 #   Most between 1 and 3, so normal with s.d. = 0.5, mu = 2
 a <- round(rnorm(m, mean = 24, sd = 6), 0)
 a[a < 0] <- 0
-claims$claim_closed <- add_yyyymm(claims$claim_made, a)
+losses$claim_closed <- add_yyyymm(losses$claim_made, a)
 
 # Claim status
 # Valuation date is val_date
-claims$status <- ifelse(claims$claim_closed <= val_date, 'C', 'O')
+losses$status <- ifelse(losses$claim_closed <= val_date, 'C', 'O')
 
 
 # [August 21, 2017 ALR]
 # Fixed to use claim made date instead of policy date for trend
-claims$claim_made_year <- year_yyyymm(claims$claim_made)
+losses$claim_made_year <- year_yyyymm(losses$claim_made)
 
 
 
@@ -233,7 +233,7 @@ claims$claim_made_year <- year_yyyymm(claims$claim_made)
 #   Model ultimate values using lognormal
 #############################################
 
-years              <- min(claims$claim_made_year):max(claims$claim_made_year)
+years              <- min(losses$claim_made_year):max(losses$claim_made_year)
 inflation          <- 0.00
 n_years            <- length(years)
 inflation_factors  <- (1 + inflation) ^ (years - 2016)
@@ -261,14 +261,14 @@ lparam <- data.frame(
 )
 
 # Ultimate claim value
-claims$sev_mu <- NULL
-claims$sev_sigma <- NULL
-a <- lookup(claims, lparam)
-claims$sev_mu <- a$sev_mu
-claims$sev_sigma <- a$sev_sigma
+losses$sev_mu <- NULL
+losses$sev_sigma <- NULL
+a <- lookup(losses, lparam)
+losses$sev_mu <- a$sev_mu
+losses$sev_sigma <- a$sev_sigma
 
-claims$claim_ultimate <- rlnorm(m, claims$sev_mu, claims$sev_sigma)
-claims$count <- 1
+losses$claim_ultimate <- rlnorm(m, losses$sev_mu, losses$sev_sigma)
+losses$count <- 1
 
 
 
@@ -276,8 +276,8 @@ claims$count <- 1
 # Make sure that the claim trend is calculatable
 
 avg_severity <- aggregate(
-  x = claims[, c('claim_ultimate', 'count')], 
-  by = claims[, 'claim_made_year', drop = FALSE], 
+  x = losses[, c('claim_ultimate', 'count')], 
+  by = losses[, 'claim_made_year', drop = FALSE], 
   FUN = sum
 )
 
@@ -344,7 +344,7 @@ pol_rating <- melt(pol_rating_wide, id.vars = 'policy_number')
 
 
 # Claims
-claims <- claims[ , 
+claims <- losses[ , 
   c("policy_number", 
     "claim_ultimate")]
 
@@ -363,6 +363,16 @@ save(claims,      file = './share/claims.RData')
 save(pol_dates,    file = './share/pol_dates.RData')
 save(pol_rating,    file = './share/pol_rating.RData')
 
+
+
+# Save the full objects, too, for analysis
+# To make sure that I can get the right answer!
+save(
+  losses, policies, 
+  disciplines, inflation, 
+  val_date, states, odf, 
+  file = './data/created-data-full.RData'
+)
 
 
 

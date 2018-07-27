@@ -82,5 +82,11 @@ paste.table <- function() {
 }
 
 
-
-
+copy.model <- function(m) {
+  d <- data.frame(
+    variable = names(m$coefficients),
+    coefficient = m$coefficients
+  )
+  copy.table(d)
+  d
+}
