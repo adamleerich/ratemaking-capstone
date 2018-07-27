@@ -30,7 +30,7 @@
 #' The capstone project ZIP also came with *resources.R* so let's `source` that, too.
 
 require(tidyverse)
-source('resources.R')
+source('c:/home/git/other/ratemaking-capstone/R/resources.R')
 
 
 
@@ -44,10 +44,10 @@ source('resources.R')
 #' 
 #' The return value of `load` is a vector giving the names of the objects loaded.
 
-(load("claims.RData"))
-(load("pol_dates.RData"))
-(load("pol_rating.RData"))
-state_lookup <- read.csv('states.csv', stringsAsFactors = FALSE)
+(load("c:/home/git/other/ratemaking-capstone/data/claims.RData"))
+(load("c:/home/git/other/ratemaking-capstone/data/pol_dates.RData"))
+(load("c:/home/git/other/ratemaking-capstone/data/pol_rating.RData"))
+state_lookup <- read.csv('c:/home/git/other/ratemaking-capstone/data/states.csv', stringsAsFactors = FALSE)
 
 
 
