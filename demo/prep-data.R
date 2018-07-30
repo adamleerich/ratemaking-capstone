@@ -44,10 +44,10 @@ source('c:/home/git/other/ratemaking-capstone/R/resources.R')
 #' 
 #' The return value of `load` is a vector giving the names of the objects loaded.
 
-(load("c:/home/git/other/ratemaking-capstone/data/claims.RData"))
-(load("c:/home/git/other/ratemaking-capstone/data/pol_dates.RData"))
-(load("c:/home/git/other/ratemaking-capstone/data/pol_rating.RData"))
-state_lookup <- read.csv('c:/home/git/other/ratemaking-capstone/data/states.csv', stringsAsFactors = FALSE)
+(load("c:/home/git/other/ratemaking-capstone/share/claims.RData"))
+(load("c:/home/git/other/ratemaking-capstone/share/pol_dates.RData"))
+(load("c:/home/git/other/ratemaking-capstone/share/pol_rating.RData"))
+state_lookup <- read.csv('c:/home/git/other/ratemaking-capstone/share/states.csv', stringsAsFactors = FALSE)
 
 
 
@@ -254,7 +254,7 @@ length(unique(pol$policy_number))
 #' I'm going to be fancy, because I want a timestamp in the file name.
 
 fname <- paste0(
-  'data-', 
+  'c:/home/git/other/ratemaking-capstone/demo/data-', 
   format(Sys.time(), '%Y-%m-%d-%H%M'), 
   '.RData')
 
